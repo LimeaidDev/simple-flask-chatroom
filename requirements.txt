@@ -18,3 +18,4 @@ Werkzeug==3.0.2
 wsproto==1.2.0
 gunicorn
 waitress
+eventlet
