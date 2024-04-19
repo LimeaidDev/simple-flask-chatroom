@@ -37,8 +37,5 @@ def handle_message(data):
         messages = msgstage + messages
 
 if __name__ == '__main__':
-    from waitress import serve
 
-    serve(app, host="0.0.0.0", port=8080)
-
-    # socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, allow_unsafe_werkzeug=True)
