@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Limechat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Urbanist:ital,wght@0,800;1,800&display=swap" rel="stylesheet">
+    <style>
+        .title {
+            font-family: "Urbanist", sans-serif;
+            font-weight: 800;
+            color: Green
+        }
+        body {
+            background-color: black;
+            animation: fadeInAnimation ease 2s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+        @keyframes fadeInAnimation {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        p {
+            font-family: "Open Sans", sans-serif;
+        }
+        .message {
+            color: white;
+        }
+        .error {
+            color: red;
+        }
+        .spacing {
+            padding-bottom: 10px;
+        }
+        .input {
+            background-color: grey;
+            padding: 10px;
+            border: none;
+            color: white;
+            transition: 0.3s;
+            border-radius: 10px
+        }
+        button {
+            cursor: pointer;
+        }
+        .input:hover {
+            background-color: #595959;
+        }
+        textarea:focus, input:focus{
+            outline: none;
+        }
+
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.3/socket.io.js"></script>
+    <script type="text/javascript">
+        let joinsound = new Audio('/static/join.mp3');
+        let messagesound = new Audio('/static/pop.mp3');
+        let errorsound = new Audio('/static/error.mp3');
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('connect', function () {
+            console.log('Connected to the server');
+        });
+
+        socket.on('response', function (data) {
+            const h2 = document.getElementById("messages");
+            let html = `<p class="message"> ${data}</p>`;
+            h2.insertAdjacentHTML("afterend", html);
+            messagesound.play();
+        });
+
+        socket.on('userconnect', function () {
+            const h2 = document.getElementById("messages");
+            let html = `<p class="message">A user has connected</p>`;
+            h2.insertAdjacentHTML("afterend", html);
+            joinsound.play();
+        });
+
+        socket.on('userdisconnect', function () {
+            const h2 = document.getElementById("messages");
+            let html = `<p class="message">A user has disconnected</p>`;
+            h2.insertAdjacentHTML("afterend", html);
+            joinsound.play();
+        });
+
+        socket.on('error', function (data) {
+            const h2 = document.getElementById("messages");
+            let html = `<p class="error">${data}</p>`;
+            h2.insertAdjacentHTML("afterend", html);
+            errorsound.play();
+        });
+
+        function sendMessage() {
+            var message = document.getElementById('message').value;
+            var username = document.getElementById('Username').value;
+            socket.emit('message', {message: message, user: username});
+        }
+    </script>
+</head>
+<body>
+    <h1 class="title">Limechat</h1>
+    <p class="message">Now without cross-site exploits</p>
+    <div class="spacing">
+        <input class="input" type="text" id="Username" placeholder="Username"><br>
+    </div>
+    <div class="spacing">
+        <input class="input" type="text" id="message" placeholder="Type a message">
+    </div>
+    <button class="input" onclick="sendMessage()">Send</button>
+</body>
+<div id="messages">
+
+</div>
+{{ msgs | safe }}
+</html>
