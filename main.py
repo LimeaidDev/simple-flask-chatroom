@@ -38,4 +38,4 @@ def handle_message(data):
 
 if __name__ == '__main__':
 
-    socketio.run(app, allow_unsafe_werkzeug=True)
+    socketio.init_app(app, allow_unsafe_werkzeug=True, cors_allowed_origins="*")
