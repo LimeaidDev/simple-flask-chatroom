@@ -34,6 +34,8 @@
             display: flex;
             flex-flow: row wrap;
             align-content: flex-start;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
         .userscontainer{
             border-style: none none solid none;
@@ -129,6 +131,34 @@
         }
 
     </style>
+
+</head>
+<body>
+    <div class="containers">
+        <div class="roomscontainer">
+            <button style="background: url('https://cdn.discordapp.com/icons/1020787131838365717/63207e49dd35599a8d4a2169c5655084.webp?size=56'); background-size: 50px;" class="roomicon"></button>
+            <button class="roomicon"></button>
+            <button class="roomicon"></button>
+
+        </div>
+        <div class="chatcontainer" id="chatcontainer">
+            <div>
+                <div id="messages">
+                    {{ msgs | safe }}
+                </div>
+                <div class="spacer"></div>
+
+            </div>
+
+
+            <input id="message" class="messagebox" ><button id="submitbutton" class="submitbutton" onclick="sendMessage()" onkeydown="clickPress(event)">Send</button>
+        </div>
+        <div class="userscontainer">
+            <input placeholder="username" id="username">
+            <div class="messagecontent">Online users: <p id="usersnum">{{ usersnum }}</p></div>
+            <div class="usercardcontianer"></div>
+        </div>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.3/socket.io.js"></script>
     <script type="text/javascript">
         let joinsound = new Audio('/static/join.mp3');
@@ -183,31 +213,14 @@
             var objDiv = document.getElementById("chatcontainer");
             objDiv.scrollTop = objDiv.scrollHeight + 1000;
         }
+
+        document.getElementById("message").addEventListener("keypress", function(event) {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("submitbutton").click();
+          }
+        });
     </script>
-</head>
-<body>
-    <div class="containers">
-        <div class="roomscontainer">
-            <button style="background: url('https://cdn.discordapp.com/icons/1020787131838365717/63207e49dd35599a8d4a2169c5655084.webp?size=56'); background-size: 50px;" class="roomicon"></button>
-            <button class="roomicon"></button>
-            <button class="roomicon"></button>
-
-        </div>
-        <div class="chatcontainer" id="chatcontainer">
-            <div id="messages">
-                {{ msgs | safe }}
-            </div>
-            <div class="spacer"></div>
-
-            <input class="messagebox" id="message"><button class="submitbutton" onclick="sendMessage()">Send</button>
-        </div>
-        <div class="userscontainer">
-            <input placeholder="username" id="username">
-            <div class="messagecontent">Online users: <p id="usersnum">{{ usersnum }}</p></div>
-            <div class="usercardcontianer"></div>
-        </div>
-    </div>
-
 
 
 </body>
