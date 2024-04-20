@@ -20,19 +20,23 @@ users_online = 0
 
 @app.route('/')
 def index():
-    return render_template('home.html', msgs=messages, users=users_online)
+    return render_template('home.html', msgs=messages, users=users_online, usersnum=users_online)
 
 @socketio.on('connect')
 def handle_connect():
     global users_online
     print('Client connected')
     users_online += 1
-    socketio.emit('userconnect')
+    print(users_online)
+    socketio.emit('userconnect', users_online)
 
 @socketio.on('disconnect')
 def handel_disconnect():
+    global users_online
     print('Client disconnected')
-    socketio.emit('userdisconnect')
+    users_online -= 1
+    print(users_online)
+    socketio.emit('userdisconnect', users_online)
 
 @socketio.on('message')
 def handle_message(data):
@@ -56,4 +60,4 @@ def handle_message(data):
 
 if __name__ == '__main__':
 
-    socketio.run(app, cors_allowed_origins="*")
+    socketio.run(app)

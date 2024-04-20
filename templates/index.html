@@ -106,7 +106,7 @@
             playsound('/static/pop.mp3');
         });
 
-        socket.on('userconnect', function () {
+        socket.on('userconnect', function (data) {
             const h2 = document.getElementById("messages");
             let html = `<p class="message">A user has connected</p>`;
             h2.insertAdjacentHTML("beforeend", html);

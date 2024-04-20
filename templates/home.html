@@ -152,17 +152,19 @@
             playsound('/static/pop.mp3');
         });
 
-        socket.on('userconnect', function () {
+        socket.on('userconnect', function (data) {
             const h2 = document.getElementById("messages");
             let html = `<div class="messagecontainer"><p class="messagecontent">A user has connected</p></div>`;
             h2.insertAdjacentHTML("beforeend", html);
+            document.getElementById("usersnum").innerText = data;
             playsound('/static/join.mp3');
         });
 
-        socket.on('userdisconnect', function () {
+        socket.on('userdisconnect', function (data) {
             const h2 = document.getElementById("messages");
             let html = `<div class="messagecontainer"><p class="messagecontent">A user has disconnected</p></div>`;
             h2.insertAdjacentHTML("beforeend", html);
+            document.getElementById("usersnum").innerText = data;
             playsound('/static/join.mp3');
         });
 
@@ -201,6 +203,7 @@
         </div>
         <div class="userscontainer">
             <input placeholder="username" id="username">
+            <div class="messagecontent">Online users: <p id="usersnum">{{ usersnum }}</p></div>
             <div class="usercardcontianer"></div>
         </div>
     </div>
