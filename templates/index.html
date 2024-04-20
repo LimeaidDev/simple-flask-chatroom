@@ -33,12 +33,25 @@
         }
         .message {
             color: white;
+            animation: fadeInAnimation ease .5s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+        .messagecontainer {
+            animation: fadeInAnimation ease .5s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
         }
         .error {
             color: red;
         }
         .spacing {
             padding-bottom: 10px;
+        }
+        .inputcontainer {
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: space-between
         }
         .input {
             background-color: grey;
@@ -47,11 +60,21 @@
             color: white;
             transition: 0.3s;
             border-radius: 10px
+            flex-grow: 1;
         }
-        button {
+        .button {
+            background-color: grey;
+            padding: 10px;
+            border: none;
+            color: white;
+            transition: 0.3s;
+            border-radius: 10px;
             cursor: pointer;
         }
         .input:hover {
+            background-color: #595959;
+        }
+        .button:hover {
             background-color: #595959;
         }
         textarea:focus, input:focus{
@@ -67,42 +90,50 @@
         let errorsound = new Audio('/static/error.mp3');
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
+        async function playsound(sound) {
+            soundelement = new Audio(sound);
+            soundelement.play();
+        }
+
         socket.on('connect', function () {
             console.log('Connected to the server');
         });
 
         socket.on('response', function (data) {
             const h2 = document.getElementById("messages");
-            let html = `<p class="message"> ${data}</p>`;
-            h2.insertAdjacentHTML("afterend", html);
-            messagesound.play();
+            let html = `<div class="messagecontainer"><p class="message"> ${data}</p></div>`;
+            h2.insertAdjacentHTML("beforeend", html);
+            playsound('/static/pop.mp3');
         });
 
         socket.on('userconnect', function () {
             const h2 = document.getElementById("messages");
             let html = `<p class="message">A user has connected</p>`;
-            h2.insertAdjacentHTML("afterend", html);
-            joinsound.play();
+            h2.insertAdjacentHTML("beforeend", html);
+            playsound('/static/join.mp3');
         });
 
         socket.on('userdisconnect', function () {
             const h2 = document.getElementById("messages");
             let html = `<p class="message">A user has disconnected</p>`;
-            h2.insertAdjacentHTML("afterend", html);
-            joinsound.play();
+            h2.insertAdjacentHTML("beforeend", html);
+            playsound('/static/join.mp3');
         });
 
         socket.on('error', function (data) {
             const h2 = document.getElementById("messages");
             let html = `<p class="error">${data}</p>`;
-            h2.insertAdjacentHTML("afterend", html);
-            errorsound.play();
+            h2.insertAdjacentHTML("beforeend", html);
+            playsound('/static/error.mp3');
         });
 
         function sendMessage() {
             var message = document.getElementById('message').value;
             var username = document.getElementById('Username').value;
             socket.emit('message', {message: message, user: username});
+            document.getElementById('message').value = ''
+            var objDiv = document.getElementById("chatcontainer");
+            objDiv.scrollTop = objDiv.scrollHeight + 1000;
         }
     </script>
 </head>
@@ -114,8 +145,8 @@
     </div>
     <div class="spacing">
         <input class="input" type="text" id="message" placeholder="Type a message">
+        <button class="button" onclick="sendMessage()">Send</button>
     </div>
-    <button class="input" onclick="sendMessage()">Send</button>
 </body>
 <div id="messages">
 
