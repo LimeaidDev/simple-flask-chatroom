@@ -56,4 +56,4 @@ def handle_message(data):
 
 if __name__ == '__main__':
 
-    socketio.run(app, allow_unsafe_werkzeug=True)
+    socketio.run(app)
