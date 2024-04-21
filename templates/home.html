@@ -189,22 +189,16 @@
         });
 
         socket.on('userconnect', function (data) {
-            const h2 = document.getElementById("messages");
-            let html = `<div class="messagecontainer"><p class="messagecontent">A user has connected</p></div>`;
-            h2.insertAdjacentHTML("beforeend", html);
             document.getElementById("usersnum").innerText = data;
             playsound('/static/join.mp3');
         });
 
-        socket.on('anouconnect, function () {
+        socket.on('anouconnect', function () {
             const h2 = document.getElementById("messages");
             let html = `<div class="messagecontainer"><p class="messagecontent">$data</p></div>`;
         });
 
         socket.on('userdisconnect', function (data) {
-            const h2 = document.getElementById("messages");
-            let html = `<div class="messagecontainer"><p class="messagecontent">A user has disconnected</p></div>`;
-            h2.insertAdjacentHTML("beforeend", html);
             document.getElementById("usersnum").innerText = data;
             playsound('/static/join.mp3');
         });
