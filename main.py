@@ -261,6 +261,7 @@ def announceonline():
         socketio.emit("error", "Server could not contact database, Try again in a few seconds", room=request.sid)
     token = request.cookies.get("token")
     c = conn.cursor()
+    print(token)
     c.execute("SELECT username FROM usercred WHERE token = %s", [str(token)])
     username = c.fetchone()[0]
     socketio.emit('anouconnect', f'{username} just joined!')
