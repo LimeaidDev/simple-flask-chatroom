@@ -167,6 +167,8 @@
         let errorsound = new Audio('/static/error.mp3');
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
+        socket.emit('announceonline');
+
         async function playsound(sound) {
             soundelement = new Audio(sound);
             soundelement.play();
@@ -192,6 +194,11 @@
             h2.insertAdjacentHTML("beforeend", html);
             document.getElementById("usersnum").innerText = data;
             playsound('/static/join.mp3');
+        });
+
+        socket.on('anouconnect, function () {
+            const h2 = document.getElementById("messages");
+            let html = `<div class="messagecontainer"><p class="messagecontent">$data</p></div>`;
         });
 
         socket.on('userdisconnect', function (data) {
@@ -243,6 +250,10 @@
             event.preventDefault();
             document.getElementById("submitbutton").click();
           }
+        });
+
+        window.addEventListener('beforeunload', function() {
+            socket.emit('announceoffline');
         });
     </script>
 
