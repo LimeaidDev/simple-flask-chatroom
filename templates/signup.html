@@ -1,10 +1,148 @@
+<!-- foxthing © 2024 -->
+<!-- Code written by Collin Davis -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
+<title>bubble | Login</title>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+25&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            overflow: hidden;
+            background-color: #282930;
+            color: white;
+            font-family: "Open Sans", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: <weight>;
+            font-style: normal;
+            font-variation-settings: "wdth" 100;
+        }
+        .container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+        }
+        .formcontainer {
+            flex-grow: 4;
+        }
+        .formbox {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: rgba(255, 255, 255, .05);
+            border: solid;
+            border-color: rgba(255, 255, 255, .1);
+            padding: 15px;
+            border-radius: 15px;
+            backdrop-filter: blur(20px);
+        }
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .forminput {
+            width: 200px;
+            padding: 10px;
+            border-radius: 15px;
+            background-color: rgba(255, 255, 255, .1);
+            color: white;
+            border: solid;
+            border-color: rgba(255, 255, 255, .1);
+            transition: 0.3s;
+        }
+        .formbutton {
+            padding: 5px;
+            border-radius: 15px;
+            border: none;
+            background-color: #7d90ff;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .formlight {
+            opacity: .7;
+            width:255px;
+            height:215px;
+            background-color: #3553fc;
+            position: fixed;
+            top:323px;
+            left:50vw;
+            transform: translate(-50%, 0);
+            z-index:-10;
+            animation: 2s ease-out 0s 1 lightfadein;
+        }
+        .center {
+            max-width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .title {
+            font-family: "Jersey 25", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+            font-size: 80px;
+            color: white;
+        }
+        .error {
+            color: red;
+        }
+        .infobar {
+            margin-bottom: 10px;
+            color: grey;
+        }
+        textarea:focus, input:focus{
+            outline: none;
+            border-color: #adbaff;
+        }
+        .formbutton:hover {
+            background-color: white;
+            color: black;
+        }
+        @keyframes lightfadein {
+            0% {
+        height: 0px;
+        top: 535px;
+        opacity: 0
+            }
+        100% {
+        opacity: .7
+            }
+        }
+    </style>
 </head>
 <body>
-
+    <div class="formlight"></div>
+<div class="container">
+    <div class="center">
+        <h1 class="title">bubble</h1>
+    </div>
+    <div class="formcontainer">
+        <div class="formbox center">
+            <form class="form" action="/validatesignup" method="post">
+                <input class="forminput" placeholder="Username" name="username">
+                <input class="forminput" placeholder="Email" name="email" type="email">
+                <input class="forminput" placeholder="Password" name="password" type="password">
+                <input class="forminput" placeholder="Confirm Password" name="confirm_password" type="password">
+                <button class="formbutton" type="submit">Sign Up</button>
+            </form>
+            <button class="formbutton" onclick="gotologin()">Already have an account? Login</button>
+        </div>
+        <p class="center error">{{ message }}</p>
+    </div>
+    <div class="center infobar">
+        foxthing © 2024  |  <a href="www.foxthing.xyz/about">About</a>  |  <a href="/tos">TOS</a> |  <a href="/privacy">Privacy Policy</a>
+    </div>
+</div>
 </body>
+<script>
+    function gotologin() {
+        window.location = "/login";
+    }
+</script>
 </html>
