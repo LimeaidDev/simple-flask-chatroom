@@ -233,11 +233,23 @@ def handle_connect():
 
 @socketio.on('disconnect')
 def handel_disconnect():
+    try:
+        conn = psycopg2.connect(host=os.getenv("sqlhost"), dbname=os.getenv("sqldbname"), user=os.getenv("sqluser"),
+                                password=os.getenv("sqlpassword"), port=5432)
+    except:
+        print("Failed to connect user to database. Trying again in 4 seconds", "warning", )
+        socketio.emit("error", "Server could not contact database, Try again in a few seconds", room=request.sid)
     global users_online
     print('Client disconnected')
     users_online -= 1
     print(users_online)
+    token = request.cookies.get("token")
+    c = conn.cursor()
+    c.execute("SELECT username FROM usercred WHERE token = %s", [str(token)])
+    username = c.fetchone()[0]
+    socketio.emit('anouconnect', f'{username} just left ):')
     socketio.emit('userdisconnect', users_online)
+
 
 @socketio.on('announceonline')
 def announceonline():
