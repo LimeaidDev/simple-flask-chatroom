@@ -196,6 +196,7 @@
         socket.on('anouconnect', function () {
             const h2 = document.getElementById("messages");
             let html = `<div class="messagecontainer"><p class="messagecontent">$data</p></div>`;
+            h2.insertAdjacentHTML("beforeend", html);
         });
 
         socket.on('userdisconnect', function (data) {
