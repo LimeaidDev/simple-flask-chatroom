@@ -117,7 +117,7 @@ async def validatelogin():
     conn.close()
     response = make_response(redirect(url_for('mainpage')))
 
-    response.set_cookie("token", settoken)
+    response.set_cookie("token", settoken, secure=True)
     return response
 
 
@@ -261,7 +261,6 @@ def announceonline():
         socketio.emit("error", "Server could not contact database, Try again in a few seconds", room=request.sid)
     token = request.cookies.get("token")
     c = conn.cursor()
-    print(token)
     c.execute("SELECT username FROM usercred WHERE token = %s", [str(token)])
     username = c.fetchone()[0]
     socketio.emit('anouconnect', f'{username} just joined!')
@@ -321,4 +320,12 @@ def error(e):
 
 
 if __name__ == '__main__':
-    socketio.run(app)
+    os.environ['app_secret_key'] = '1234'
+    os.environ['sqldbname'] = 'hustfxta'
+    os.environ['sqlhost'] = 'kashin.db.elephantsql.com'
+    os.environ['sqlpassword'] = 'lRntwmDTkAUNU-CsYTqKgFYsujLv_2X-'
+    os.environ['sqlport'] = '5432'
+    os.environ['sqluser'] = 'hustfxta'
+    os.environ['nr_user'] = 'noreply@foxthing.xyz'
+    os.environ['nr_pass'] = 'a002cb93aa6dfe52e5bd1ecf'
+    socketio.run(app, allow_unsafe_werkzeug=True)
