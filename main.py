@@ -328,9 +328,9 @@ def handle_message():
     return "", 201
 
 
-#@app.errorhandler(Exception)
-#def error(e):
-    #return render_template("error.html")
+@app.errorhandler(Exception)
+def error(e):
+    return render_template("error.html")
 
 
 if __name__ == '__main__':
