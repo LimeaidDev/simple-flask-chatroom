@@ -1,7 +1,7 @@
 import threading
 
 from flask import Flask, render_template, request, redirect, url_for, make_response
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, join_room, leave_room
 import bleach
 import string
 import os
@@ -66,13 +66,14 @@ def signup():
 
 @app.route('/logout')
 async def logout():
-    resp = make_response(redirect(url_for('home')))
-    resp.set_cookie('token', '', expires=0)
+    resp = make_response(redirect(url_for('mainpage')))
+    resp.set_cookie('token', '', expires=0, max_age=7 * 24 * 60 * 60)
     return resp
 
 
 @app.route('/')
 async def mainpage():
+    room = request.args.get('room')
     try:
         conn = psycopg2.connect(host=os.getenv("sqlhost"), dbname=os.getenv("sqldbname"), user=os.getenv("sqluser"),
                                 password=os.getenv("sqlpassword"), port=5432)
@@ -80,10 +81,16 @@ async def mainpage():
         print("Failed to connect user to database. Trying again in 4 seconds", "warning")
         return redirect(request.url)
     c = conn.cursor()
-    if request.cookies.get('token') is None:
+    token = request.cookies.get('token')
+    if token is None or token == '':
         conn.close()
         return redirect(url_for('login'))
-    return render_template('home.html', msgs=messages, users=users_online, usersnum=users_online)
+    resp = make_response(render_template('home.html', msgs=messages, users=users_online, usersnum=users_online))
+    if room is None or room == '':
+        resp.set_cookie('room', 'main')
+    else:
+        resp.set_cookie('room', room)
+    return resp
 
 
 @app.route('/validatelogin', methods=['POST', 'GET'])
@@ -228,6 +235,8 @@ def handle_connect():
     print('Client connected')
     users_online += 1
     print(users_online)
+    room = request.cookies.get('room')
+    join_room(room)
     socketio.emit('userconnect', users_online)
 
 
@@ -243,12 +252,14 @@ def handel_disconnect():
     print('Client disconnected')
     users_online -= 1
     print(users_online)
+    room = request.cookies.get('room')
     token = request.cookies.get("token")
     c = conn.cursor()
     c.execute("SELECT username FROM usercred WHERE token = %s", [str(token)])
     username = c.fetchone()[0]
-    socketio.emit('anouconnect', f'{username} just left ):')
+    socketio.emit('anouconnect', f'{username} just left ):', to=room)
     socketio.emit('userdisconnect', users_online)
+    leave_room(room)
 
 
 @socketio.on('announceonline')
@@ -260,10 +271,11 @@ def announceonline():
         print("Failed to connect user to database. Trying again in 4 seconds", "warning", )
         socketio.emit("error", "Server could not contact database, Try again in a few seconds", room=request.sid)
     token = request.cookies.get("token")
+    room = request.cookies.get("room")
     c = conn.cursor()
     c.execute("SELECT username FROM usercred WHERE token = %s", [str(token)])
     username = c.fetchone()[0]
-    socketio.emit('anouconnect', f'{username} just joined!')
+    socketio.emit('anouconnect', f'{username} just joined!', to=room)
 
 @socketio.on('announceoffline')
 def announceonline():
@@ -274,10 +286,11 @@ def announceonline():
         print("Failed to connect user to database. Trying again in 4 seconds", "warning", )
         socketio.emit("error", "Server could not contact database, Try again in a few seconds", room=request.sid)
     token = request.cookies.get("token")
+    room = request.cookies.get("room")
     c = conn.cursor()
     c.execute("SELECT username FROM usercred WHERE token = %s", [str(token)])
     username = c.fetchone()[0]
-    socketio.emit('anouconnect', f'{username} just left ):')
+    socketio.emit('anouconnect', f'{username} just left ):', to=room)
 
 
 
@@ -296,28 +309,28 @@ def handle_message():
     token = request.cookies.get("token")
     print('Received message:', data)
     if token == '':
-        socketio.emit('error', 'Error sending message', room=request.sid)
+        socketio.emit('error', 'Error sending message', to=request.sid)
         conn.close()
     elif data["message"] == '':
-        socketio.emit('error', f"You can't say nothing", room=request.sid)
+        socketio.emit('error', f"You can't say nothing", to=request.sid)
         conn.close()
     else:
         c.execute("SELECT username FROM usercred WHERE token = %s", [str(data["token"])])
         username = c.fetchone()[0]
         if username == '':
-            socketio.emit('error', f"Error sending message", room=request.sid)
+            socketio.emit('error', f"Error sending message", to=request.sid)
             conn.close()
         socketio.emit('response',
-                      f'<strong><p class="usernamecontent">{bleach.clean(username)}: </p></strong><p class="messagecontent">{bleach.clean(data["message"])}</p>')
+                      f'<strong><p class="usernamecontent">{bleach.clean(username)}: </p></strong><p class="messagecontent">{bleach.clean(data["message"])}</p>', to=request.cookies.get('room'))
         msgstage = f'<div class="messagecontainer"><strong><p class="usernamecontent">{bleach.clean(username)}: </p></strong><p class="messagecontent">{bleach.clean(data["message"])}</p></div>'
         messages = messages + msgstage
         conn.close()
     return "", 201
 
 
-@app.errorhandler(Exception)
-def error(e):
-    return render_template("error.html")
+#@app.errorhandler(Exception)
+#def error(e):
+    #return render_template("error.html")
 
 
 if __name__ == '__main__':

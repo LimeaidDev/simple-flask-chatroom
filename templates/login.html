@@ -71,11 +71,13 @@
             height:115px;
             background-color: #3553fc;
             position: fixed;
-            top:308px;
+            top:290px;
             left:50vw;
             transform: translate(-50%, 0);
             z-index:-10;
             animation: 2s ease-out 0s 1 lightfadein;
+            animation-iteration-count: infinite;
+            animation-direction: alternate;
         }
         .center {
             max-width: fit-content;
@@ -107,7 +109,8 @@
         @keyframes lightfadein {
             0% {
         height: 0px;
-        top: 425px;
+        width: 0px;
+        top: 400px;
         opacity: 0
             }
         100% {
