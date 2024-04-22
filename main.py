@@ -293,8 +293,9 @@ def handle_message():
     c = conn.cursor()
     global messages
     data = request.json
+    token = request.cookies.get("token")
     print('Received message:', data)
-    if data["token"] == '':
+    if token == '':
         socketio.emit('error', 'Error sending message', room=request.sid)
         conn.close()
     elif data["message"] == '':
@@ -320,12 +321,4 @@ def error(e):
 
 
 if __name__ == '__main__':
-    os.environ['app_secret_key'] = '1234'
-    os.environ['sqldbname'] = 'hustfxta'
-    os.environ['sqlhost'] = 'kashin.db.elephantsql.com'
-    os.environ['sqlpassword'] = 'lRntwmDTkAUNU-CsYTqKgFYsujLv_2X-'
-    os.environ['sqlport'] = '5432'
-    os.environ['sqluser'] = 'hustfxta'
-    os.environ['nr_user'] = 'noreply@foxthing.xyz'
-    os.environ['nr_pass'] = 'a002cb93aa6dfe52e5bd1ecf'
-    socketio.run(app, cors_allowed_origins="*")
+    socketio.run(app, allow_unsafe_werkzeug=True, )
