@@ -328,4 +328,4 @@ if __name__ == '__main__':
     os.environ['sqluser'] = 'hustfxta'
     os.environ['nr_user'] = 'noreply@foxthing.xyz'
     os.environ['nr_pass'] = 'a002cb93aa6dfe52e5bd1ecf'
-    socketio.run(app, allow_unsafe_werkzeug=True)
+    socketio.run(app, cors_allowed_origins="*")
