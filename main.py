@@ -475,7 +475,7 @@ def handle_message():
         messages = messages + msgstage
         c.execute(
             "INSERT INTO bubblemessagelog (username, message, ipaddress) VALUES (%s, %s, %s)",
-            [username, data["message"], request.remote_addr],
+            [username, data["message"], request.access_route[-1]],
         )
         conn.commit()
         conn.close()
