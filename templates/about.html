@@ -1,9 +1,13 @@
+
 <!DOCTYPE html>
 <html>
 <title>bubble</title>
 <head>
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+25&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Urbanist:ital,wght@0,800;1,800&display=swap" rel="stylesheet">
     <style>
         body {
@@ -61,6 +65,15 @@
             padding-right: 15px;
             padding-top: 10px;
         }
+        .title {
+            margin-top: 0px;
+            margin-bottom: 0px;
+            font-family: "Jersey 25", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+            font-size: 80px;
+            color: white;
+        }
         .roomicon {
             background: no-repeat #50525e;
             border-radius: 30px;
@@ -79,6 +92,15 @@
             border: none;
             width: 50px;
             height: 50px;
+            transition: 0.3s;
+            object-fit: cover;
+        }
+        .pfp {
+            background-color: #474747;
+            border-radius: 60px;
+            border: none;
+            width: 70px;
+            height: 70px;
             transition: 0.3s;
             object-fit: cover;
         }
@@ -105,7 +127,7 @@
             border-radius: 10px;
             position: fixed;
             bottom: 0px;
-            width: calc(100% - 200px);
+            width: calc(100% - 400px);
             }
         .submitbutton {
             font-family: "Open Sans", sans-serif;
@@ -120,7 +142,7 @@
             border-radius: 10px;
             position: fixed;
             bottom: 0px;
-            right: 0px;
+            right: 200px;
             width: 80px;
             cursor: pointer;
             }
@@ -142,73 +164,27 @@
             <button onclick="logout()" title="Logout" style="background: url('/static/logout.png') #50525e ; background-size: 30px; background-repeat: no-repeat; background-position: center center;" class="roomicon" ></button>
             <button onclick="info()" title="About bubble" style="background: url('/static/info.png') #50525e ; background-size: 30px; background-repeat: no-repeat; background-position: center center;" class="roomicon"></button>
 
-
         </div>
         <div class="chatcontainer" id="chatcontainer">
             <div>
                 <div id="messages">
+                    <div class="messagecontainer"><h1 class="title">bubble</h1></div>
+                    <div class="messagecontainer"><div style="background: url('/static/limepfp.png') #50525e ; background-size: 70px; background-repeat: no-repeat; background-position: center center;" class="pfp"></div><p class="messagecontent"><strong>Creator: </strong><br>limeadetv</p></div>
+                    <div class="messagecontainer"><p class="messagecontent">To contact the creator, send an email to <strong>limeywashere@gmail.com</strong></p></div>
+
                 </div>
                 <div class="spacer"></div>
 
             </div>
 
 
-            <input id="message" class="messagebox" placeholder="Type a message..."><button id="submitbutton" class="submitbutton" onclick="sendMessage()" onkeydown="clickPress(event)">Send</button>
         </div>
-
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.3/socket.io.js"></script>
     <script type="text/javascript">
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const room = urlParams.get('room');
-
-        socket.emit('announceonline');
-
-        async function playsound(sound) {
-            soundelement = new Audio(sound);
-            soundelement.play();
-        }
-
-        socket.on('connect', function () {
-            console.log('Connected to the server');
-        });
-
-        socket.on('response', function (data) {
-            const h2 = document.getElementById("messages");
-            let html = `<div class="messagecontainer">${data}</div>`;
-            h2.insertAdjacentHTML("beforeend", html);
-            playsound('/static/pop.mp3');
-            var objDiv = document.getElementById("chatcontainer");
-            objDiv.scrollTop = objDiv.scrollHeight + 1000;
-
-        });
-
-        socket.on('anouconnect', function (data) {
-            const h2 = document.getElementById("messages");
-            let html = `<div class="messagecontainer"><p class="messagecontent">${data}</p></div>`;
-            h2.insertAdjacentHTML("beforeend", html);
-            playsound('/static/join.mp3');
-        });
-
-        socket.on('userdisconnect', function (data) {
-            document.getElementById("usersnum").innerText = data;
-        });
-
-        socket.on('error', function (data) {
-            const h2 = document.getElementById("messages");
-            let html = `<div class="messagecontainer"><p class="error">${data}</p></div>`;
-            h2.insertAdjacentHTML("beforeend", html);
-            playsound('/static/error.mp3');
-        });
 
         function roommenu() {
             window.location.href = "/roommenu";
-        }
-
-        function info() {
-            window.location.href = "/about";
         }
 
         function logout() {
@@ -219,13 +195,17 @@
             window.location.href = "/";
         }
 
-        function joinroom() {
-            roomcode = document.getElementById("roomcode").value;
-            window.location.href = `/?room=${roomcode}`;
+        function about() {
+            window.location.href = "/about";
         }
 
         function roompage () {
             window.location.href = "/roompage";
+        }
+
+        function joinroom() {
+            roomcode = document.getElementById("roomcode").value;
+            window.location.href = `/?room=${roomcode}`;
         }
 
         function getCookie(name) {
@@ -233,40 +213,6 @@
             const parts = value.split(`; ${name}=`);
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
-
-        function sendMessage() {
-            var message = document.getElementById('message').value;
-            var token = getCookie('token')
-
-            var data = {
-                message: message,
-                token: token
-            };
-
-            // Make the fetch request
-            fetch('/message', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-
-            document.getElementById('message').value = ''
-            var objDiv = document.getElementById("chatcontainer");
-            objDiv.scrollTop = objDiv.scrollHeight + 1000;
-        }
-
-        document.getElementById("message").addEventListener("keypress", function(event) {
-          if (event.key === "Enter") {
-            event.preventDefault();
-            document.getElementById("submitbutton").click();
-          }
-        });
-
-        window.addEventListener('beforeunload', function() {
-            socket.emit('announceoffline');
-        });
     </script>
 
 
