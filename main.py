@@ -39,8 +39,9 @@ def email_alert(subject, body, to):
     server = smtplib.SMTP("smtp.forwardemail.net", 2587)
     server.starttls()
     server.login(user, password)
-    server.send_message(msg)
-
+    result = server.send_message(msg)
+    print(result)
+    
     server.quit()
 
 
