@@ -40,7 +40,7 @@ def email_alert(subject, body, to):
     server.starttls()
     server.login(user, password)
     result = server.send_message(msg)
-    print(result)
+    print(f"Status: {result}")
     
     server.quit()
 
